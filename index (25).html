@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>구름 관찰 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<style>
+*{box-sizing:border-box}
+:root{--cream:#fff8e7;--ch:#2b2b2b;--peach:#ffd9c2;--mint:#d4f0dc;--sky:#d6e9ff;--lemon:#fff0a6;--dz:#ffc93c}
+body{margin:0;background:var(--cream);color:var(--ch);font-family:'Gowun Dodum',sans-serif;font-size:18px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
+h1,h2,h3,.logo,.btn,.chip,.st b{font-family:'Jua',sans-serif;font-weight:400}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+.nav{background:var(--cream);border-bottom:3px solid var(--ch);position:sticky;top:0;z-index:5}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;min-height:60px;gap:12px}
+.logo{font-size:24px}.who{font-size:15px}
+#sync{font-size:14px}
+.sec{padding:34px 0;border-bottom:3px solid var(--ch)}
+.s1{background:var(--lemon)}.s2{background:var(--sky)}.s3{background:var(--mint)}.s4{background:var(--peach)}.s5{background:var(--lemon)}.s0{background:var(--sky)}
+h2{font-size:clamp(28px,4vw,40px);margin:0 0 6px;line-height:1.2}
+.eyebrow{display:inline-block;background:#fff;border:3px solid var(--ch);border-radius:100px;padding:0 14px;font-size:15px;margin:0 0 12px;box-shadow:3px 3px 0 var(--ch);font-family:'Jua'}
+.card{background:#fff;border:3px solid var(--ch);border-radius:24px;padding:20px 22px;box-shadow:5px 5px 0 var(--ch);margin:18px 0}
+.card h3{font-size:22px;margin:0 0 8px}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.chip{border:3px solid var(--ch);border-radius:100px;padding:6px 18px;background:#fff;cursor:pointer;font-size:18px;box-shadow:3px 3px 0 var(--ch)}
+.chip.on{background:var(--dz)}
+.chip:disabled{cursor:default;opacity:.85}
+textarea,input[type=text],input[type=number],select{width:100%;font:inherit;border:3px solid var(--ch);border-radius:16px;padding:8px 12px;background:#fff;color:var(--ch)}
+textarea{min-height:76px;resize:vertical}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--ch);border-radius:100px;padding:10px 26px;font-size:20px;background:var(--dz);color:var(--ch);box-shadow:5px 5px 0 var(--ch);cursor:pointer;margin-top:12px}
+.btn:disabled{background:#fff;cursor:default;opacity:.7}
+.lock{text-align:center;padding:24px 0;font-family:'Jua';font-size:22px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:15px;margin-top:8px}
+.nums label{display:block}
+.done{font-size:15px;margin-top:8px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp .card{margin:0}
+.blank{display:inline-block;min-width:96px}
+.blank select{width:auto;display:inline-block;padding:2px 8px;border-radius:12px}
+.start{max-width:520px;margin:40px auto}
+.gbox{margin-top:12px;border:3px dashed var(--ch);border-radius:18px;padding:12px 14px;background:var(--cream)}
+.gbox canvas{width:100%;height:240px;display:block;background:#fff;border:3px solid var(--ch);border-radius:14px;margin-top:8px}
+.gbox .sum{font-size:15px;margin-top:6px}
+.gbox .rd{font-size:14px;margin-top:4px;min-height:22px}
+.pts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pts .chip{font-size:16px;padding:4px 14px}
+.ptq{background:#fff;border:3px solid var(--ch);border-radius:18px;padding:12px 14px;margin-top:10px}
+.ptq b{font-family:'Jua';font-weight:400;font-size:19px}
+.ptq .val{font-size:15px;margin-top:6px;background:var(--lemon);border-radius:12px;padding:6px 10px;display:none}
+.gbox input[type=file]{font-size:15px}
+.mini{padding:4px 14px;font-size:16px;margin-top:8px}
+.fb{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#fff;border:3px solid var(--ch);border-radius:24px;box-shadow:5px 5px 0 var(--ch);padding:14px 20px;max-width:560px;width:calc(100% - 32px);display:none;z-index:9}
+.fb.on{display:block}
+@media(max-width:640px){.row,.cmp{grid-template-columns:1fr}.nums{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap"><div class="logo">구름 관찰 노트</div><div class="who" id="who"></div><div id="sync"></div></div></header>
+
+<section class="sec s0" id="startSec"><div class="wrap"><div class="card start">
+  <h3>시작하기</h3>
+  <div class="row"><label>반<input id="inCls" type="text" placeholder="예: 2-3"></label><label>번호<input id="inNum" type="number" min="1" max="40"></label></div>
+  <div class="row" style="margin-top:8px"><label>이름<input id="inName" type="text"></label><label>모둠<select id="inGrp"><option value="">고르기</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label></div>
+  <div id="startMsg" style="color:#b33;font-size:15px;margin-top:6px"></div>
+  <button class="btn" id="btnStart">시작</button>
+</div></div></section>
+
+<main id="main" hidden>
+<section class="sec s1"><div class="wrap">
+  <span class="eyebrow">1 · 먼저 예측해요</span><h2>실험 전에, 내 생각은?</h2>
+  <div id="p1"></div>
+</div></section>
+<section class="sec s2"><div class="wrap">
+  <span class="eyebrow">2 · 관찰 기록</span><h2>실험에서 본 것</h2>
+  <div id="p2"></div>
+</div></section>
+<section class="sec s3"><div class="wrap">
+  <span class="eyebrow">3 · 규칙 찾기</span><h2>모든 모둠에 공통인 규칙은?</h2>
+  <div id="p3"></div>
+</div></section>
+<section class="sec s4"><div class="wrap">
+  <span class="eyebrow">4 · 다시 생각하기</span><h2>처음 생각과 지금 생각</h2>
+  <div id="p4"></div>
+</div></section>
+</main>
+<div class="fb" id="fbBox"><b style="font-family:Jua">선생님 한마디</b><div id="fbText"></div><button class="btn" id="fbOk" style="padding:4px 18px;font-size:17px">확인</button></div>
+
+<script>
+/* ===== Firebase 설정 ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCmdo6XSf8Hu62aPZezynd9WoEMsj5mc5M",
+  authDomain: "cloud-9e6ad.firebaseapp.com",
+  projectId: "cloud-9e6ad",
+  storageBucket: "cloud-9e6ad.firebasestorage.app",
+  messagingSenderId: "469082804294",
+  appId: "1:469082804294:web:9487ba98a3af97b6493a47"
+};
+const FB={apiKey:firebaseConfig.apiKey,projectId:firebaseConfig.projectId,col:'cloud1',ctrl:'cloud1_ctrl/state'};
+const FB_ON=!!FB.apiKey&&!/^여기/.test(FB.apiKey);
+const $=id=>document.getElementById(id);
+const KEY='cloud1_state';
+let S={};try{S=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){S={};}
+let STAGE=+(S.stage||1);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* ===== 선택지 ===== */
+const TEMP=['올라간다','그대로다','내려간다'];
+const DIR=['올라감','거의 그대로','내려감'];
+const SEE=['뿌옇게 흐려짐','변화 없음','흐려졌던 것이 사라짐'];
+const BLANKS=[
+ ['b1','공기 펌프를 눌러 압력을 가하면 페트병 안의 온도가',['증가','감소'],'한다.'],
+ ['b2','뚜껑을 열어 압력이 감소하면 페트병 안의 온도가',['증가','감소'],'한다.'],
+ ['b3','이때 온도가 감소하며 상대 습도가',['증가','감소'],'하며,'],
+ ['b4','포화되기',['쉬워','어려워'],'진다.']];
+
+/* ===== 그리기 ===== */
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function chips(name,list,val,dis){return `<div class="opts">${list.map(o=>`<button type="button" class="chip${val===o?' on':''}" data-n="${name}" data-v="${esc(o)}" ${dis?'disabled':''}>${esc(o)}</button>`).join('')}</div>`;}
+function lockBox(n){return `<div class="card lock">선생님이 ${n}단계를 열면 시작해요</div>`;}
+
+/* ===== CSV 그래프 ===== */
+function gbox(k){return `<div class="gbox"><b style="font-family:Jua">파일 넣기</b> <span style="font-size:14px">(다운로드한 data-press_temp-1.csv)</span><br>
+  <input type="file" accept=".csv,text/csv" data-csv="${k}"><canvas id="cv_${k}" width="760" height="240" hidden></canvas>
+  <div class="rd" id="rd_${k}">그래프 위에 마우스를 올리거나 손가락으로 누르면 그 순간의 값이 보여요.</div>
+  <div id="vw_${k}" style="display:none;font-size:15px">보기: <select id="view_${k}" style="width:auto;display:inline-block;padding:2px 8px"><option value="all">전체</option><option value="pump">펌프를 누른 구간</option><option value="open">뚜껑을 연 순간 크게</option></select></div>
+  <div class="sum" id="sum_${k}"></div><div id="pt_${k}"></div></div>`;}
+const RAW={},RUNS={},RUNI={};
+function parseCSV(text){
+  const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());if(!lines.length)return null;
+  const sp=l=>l.split(/[,;\t]/).map(x=>x.trim().replace(/^"|"$/g,''));
+  const isNum=c=>c.length>=3&&c.slice(0,3).every(x=>x!==''&&isFinite(+x));
+  let head=[];const first=sp(lines[0]);if(!isNum(first))head=first.map(h=>h.toLowerCase());
+  const find=(re,d)=>{const i=head.findIndex(h=>re.test(h));return i<0?d:i;};
+  const it=find(/time|시간/,0),ip=find(/press|기압|압력/,1),iT=find(/temp|온도|기온/,2);
+  // 피코는 '기존 데이터 삭제'를 누르지 않으면 측정을 이어 붙이므로, 시간이 0으로 돌아가는 곳에서 측정을 나눈다
+  const runs=[];let cur=null,prev=Infinity;
+  for(const l of lines){const c=sp(l);if(!isNum(c))continue;const a=+c[it],b=+c[ip],d=+c[iT];
+    if(!cur||a<prev){cur={t:[],p:[],T:[]};runs.push(cur);}cur.t.push(a);cur.p.push(b);cur.T.push(d);prev=a;}
+  const ok=runs.filter(r=>r.t.length>=10);if(!ok.length)return null;
+  const ms=/ms/.test(head[it]||'')||Math.max(...ok.map(r=>r.t[r.t.length-1]))>1000;
+  return ok.map(r=>{const t0=r.t[0];return{t:r.t.map(x=>ms?(x-t0)/1000:x-t0),p:r.p,T:r.T};});}
+const mean=(a,i,j)=>{i=Math.max(0,i);j=Math.min(a.length,j);let s=0,n=0;for(let k=i;k<j;k++){s+=a[k];n++;}return n?s/n:NaN;};
+function idxAt(t,sec){let i=0;while(i<t.length&&t[i]<sec)i++;return i;}
+/* 한 파일 = 압축(펌프) → 잠깐 기다림 → 팽창(뚜껑 열기) */
+function analyze(d){const n=d.t.length,dt=(d.t[n-1]-d.t[0])/(n-1)||0.01,per=s=>Math.max(1,Math.round(s/dt));
+  const w=per(0.2);let ev=-1,best=0;for(let i=0;i+w<n;i++){const v=d.p[i+w]-d.p[i];if(v<best){best=v;ev=i;}}
+  if(best>-20)ev=-1; // 20 hPa 넘게 갑자기 떨어진 곳이 없으면 뚜껑을 안 연 것
+  const end=ev>0?ev:n;const a1=per(1),p0=mean(d.p,0,a1),T0=mean(d.T,0,a1);
+  let is=-1;for(let i=0;i<end;i++)if(d.p[i]>p0+3){is=i;break;}
+  const R={n,per,ev,is,p0,T0};
+  if(is>=0){let ipm=is;for(let i=is;i<end;i++)if(d.p[i]>d.p[ipm])ipm=i;
+    let ipl=ipm;for(let i=is;i<end;i++)if(d.p[i]>=p0+(d.p[ipm]-p0)*0.98){ipl=i;break;}
+    let iTm=is;for(let i=is;i<Math.min(end,ipl+per(5));i++)if(d.T[i]>d.T[iTm])iTm=i;
+    Object.assign(R,{ipm,ipl,iTm,cP1:mean(d.p,ipl,ipl+per(0.5)),cT1:d.T[iTm]});}
+  if(ev>0){const h=per(0.5);R.eP0=mean(d.p,ev-h,ev);R.eP1=mean(d.p,ev+per(1),ev+per(1.5));R.eT0=mean(d.T,ev-h,ev);
+    let im=ev;for(let i=ev;i<Math.min(n,ev+per(3));i++)if(d.T[i]<d.T[im])im=i;R.im=im;R.eT1=d.T[im];}
+  R.msg=(is>=0?`펌프를 누른 구간: ${d.t[is].toFixed(1)}초 ~ ${d.t[R.ipl].toFixed(1)}초. `:'펌프를 누른 구간을 찾지 못했어요. ')+(ev>0?`뚜껑을 연 순간: ${d.t[ev].toFixed(1)}초 (노란 선).`:'뚜껑을 연 순간을 찾지 못했어요. 41초 안에 뚜껑을 열었는지 확인해요.');
+  return R;}
+function down(d,m=200){const n=d.t.length,st=Math.max(1,Math.ceil(n/m)),o={t:[],p:[],T:[]};for(let i=0;i<n;i+=st){o.t.push(+d.t[i].toFixed(2));o.p.push(+mean(d.p,i,i+st).toFixed(2));o.T.push(+mean(d.T,i,i+st).toFixed(3));}return o;}
+function points(d){const a=analyze(d),t=d.t,n=a.n,per=a.per,f=(v,x=2)=>v.toFixed(x),out=[];
+  if(a.is>=0)out.push({name:'펌프를 누르는 동안',hl:[{band:[t[a.is],t[a.ipl]]}],q:'기압이 올라가는 동안, 온도는 어떻게 변했나요?',
+      val:`기압 ${f(a.p0,1)} → ${f(a.cP1,1)} hPa (+${f(a.cP1-a.p0,1)}) · 온도 ${f(a.T0)} → ${f(a.cT1)} °C (+${f(a.cT1-a.T0)})`});
+  if(a.ev>0)out.push({name:'뚜껑을 연 순간',hl:[{line:t[a.ev]},{band:[t[a.ev],t[a.im]]}],q:'기압이 내려가는 순간, 온도는 어떻게 변했나요?',
+      val:`기압 ${f(a.eP0,1)} → ${f(a.eP1,1)} hPa (${f(a.eP1-a.eP0,1)}) · 온도 ${f(a.eT0)} → ${f(a.eT1)} °C (${f(a.eT1-a.eT0)})`});
+  if(a.is>=0&&a.ev>0)out.push({name:'두 순간 비교하기',hl:[{band:[t[a.is],t[a.ipl]]},{line:t[a.ev]}],q:'두 순간을 나란히 보세요. 기압과 온도 사이에는 어떤 관계가 있나요? 한 문장으로 써 보세요.',
+      val:`기압 ↑ 일 때 온도 ${a.cT1>a.T0?'↑':'↓'} · 기압 ↓ 일 때 온도 ${a.eT1<a.eT0?'↓':'↑'}`});
+  return out;}
+function drawChart(cv,d,hl){const ctx=cv.getContext&&cv.getContext('2d');if(!ctx)return;
+  const W=cv.width=cv.clientWidth*2||760,H=cv.height=480,L=110,R=110,Tp=50,B=70;ctx.clearRect(0,0,W,H);ctx.font='22px Gowun Dodum, sans-serif';
+  const ext=a=>{let lo=Math.min(...a),hi=Math.max(...a);if(hi-lo<1e-6){lo-=0.5;hi+=0.5;}const pad=(hi-lo)*0.08;return[lo-pad,hi+pad];};
+  const [t0,t1]=[d.t[0],d.t[d.t.length-1]],[p0,p1]=ext(d.p),[T0,T1]=ext(d.T);
+  const X=t=>L+(t-t0)/(t1-t0||1)*(W-L-R),Yp=v=>Tp+(1-(v-p0)/(p1-p0))*(H-Tp-B),YT=v=>Tp+(1-(v-T0)/(T1-T0))*(H-Tp-B);
+  cv._geo={L,R,W,t0,t1,d};
+  (hl||[]).forEach(h=>{if(h.band){const a=Math.max(t0,h.band[0]),b=Math.min(t1,h.band[1]);if(b>a){ctx.fillStyle='rgba(255,201,60,0.28)';ctx.fillRect(X(a),Tp,X(b)-X(a),H-Tp-B);}}});
+  ctx.strokeStyle='#ddd';ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=Tp+i*(H-Tp-B)/4;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(W-R,y);ctx.stroke();
+    ctx.fillStyle='#c0392b';ctx.textAlign='right';ctx.fillText((p1-i*(p1-p0)/4).toFixed(0),L-10,y+8);ctx.fillStyle='#1f5fbf';ctx.textAlign='left';ctx.fillText((T1-i*(T1-T0)/4).toFixed(2),W-R+10,y+8);}
+  ctx.fillStyle='#2b2b2b';ctx.textAlign='center';for(let i=0;i<=5;i++){const t=t0+i*(t1-t0)/5;ctx.fillText(t.toFixed(1),X(t),H-B+32);}ctx.fillText('시간(초)',W/2,H-8);
+  ctx.textAlign='left';ctx.fillStyle='#c0392b';ctx.fillText('■ 기압(hPa)',L,24);ctx.fillStyle='#1f5fbf';ctx.fillText('■ 온도(°C)',L+180,24);
+  (hl||[]).forEach(h=>{if(h.line!=null&&h.line>=t0&&h.line<=t1){ctx.strokeStyle='#ffc93c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(X(h.line),Tp);ctx.lineTo(X(h.line),H-B);ctx.stroke();}});
+  const line=(a,Y,c)=>{ctx.strokeStyle=c;ctx.lineWidth=4;ctx.beginPath();a.forEach((v,i)=>{const x=X(d.t[i]),y=Y(v);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();};
+  line(d.p,Yp,'#c0392b');line(d.T,YT,'#1f5fbf');
+  (hl||[]).forEach(h=>{if(h.dot&&h.dot[0]>=t0&&h.dot[0]<=t1){const y=h.ax==='p'?Yp(h.dot[1]):YT(h.dot[1]);ctx.fillStyle='#ffc93c';ctx.strokeStyle='#2b2b2b';ctx.lineWidth=4;ctx.beginPath();ctx.arc(X(h.dot[0]),y,14,0,7);ctx.fill();ctx.stroke();}});
+  if(cv._cross!=null){const x=cv._cross;ctx.strokeStyle='#2b2b2b';ctx.setLineDash([8,8]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,Tp);ctx.lineTo(x,H-B);ctx.stroke();ctx.setLineDash([]);}}
+const PT={},PTI={};
+function readout(cv,k,ev){const g=cv._geo;if(!g)return;const r=cv.getBoundingClientRect();const cx=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left;const W2=r.width;
+  const x=cx/W2*g.W;if(x<g.L||x>g.W-g.R)return;const tt=g.t0+(x-g.L)/(g.W-g.L-g.R)*(g.t1-g.t0);const i=Math.min(g.d.t.length-1,idxAt(g.d.t,tt));
+  cv._cross=x;drawChart(cv,g.d,cv._hl);$('rd_'+k).textContent=`${g.d.t[i].toFixed(2)}초 · 기압 ${g.d.p[i].toFixed(1)} hPa · 온도 ${g.d.T[i].toFixed(2)} °C`;}
+function showGraph(k){const d=RAW[k]||(D.obs&&D.obs['g'+k]);const cv=$('cv_'+k);if(!d||!cv)return;cv.hidden=false;
+  let view=d,hl=[];
+  if(RAW[k]){const A=RAW[k],a=analyze(A);const R=RUNS[k]||[];
+    const pick=R.length>1?`<div style="margin-bottom:4px">파일 안에 측정이 ${R.length}번 들어 있어요 ('기존 데이터 삭제'를 안 누르면 이어 붙어요). <select data-run="${k}" style="width:auto;display:inline-block;padding:2px 8px">${R.map((_,i)=>`<option value="${i}"${i===RUNI[k]?' selected':''}>${i+1}번째 측정</option>`).join('')}</select></div>`:'';
+    $('sum_'+k).innerHTML=pick+esc(a.msg)+' 아래 짚어 볼 곳을 하나씩 눌러 보세요.'+` <button class="btn mini" data-fill="${k}">다 짚어 봤으면, 숫자 칸 채우기</button>`;
+    const rs=document.querySelector(`select[data-run="${k}"]`);if(rs)rs.onchange=()=>{RUNI[k]=+rs.value;RAW[k]=RUNS[k][RUNI[k]];D.obs['g'+k]=down(RAW[k]);PTI[k]=null;showGraph(k);};
+    PT[k]=points(A);const sel=PTI[k];
+    hl=sel!=null?PT[k][sel].hl:(a.ev>0?[{line:A.t[a.ev]}]:[]);
+    $('vw_'+k).style.display='block';const vm=$('view_'+k).value,cut=(t0,t1)=>{const i0=idxAt(A.t,t0),i1=Math.max(i0+2,idxAt(A.t,t1));return{t:A.t.slice(i0,i1),p:A.p.slice(i0,i1),T:A.T.slice(i0,i1)};};
+    if(vm==='open'&&a.ev>0)view=cut(A.t[a.ev]-4,A.t[a.ev]+6);
+    if(vm==='pump'&&a.is>=0)view=cut(A.t[a.is]-2,A.t[a.ev>0?a.ev:a.n-1]+0.5);
+    const notes=(D.obs.notes=D.obs.notes||{})[k]=D.obs.notes[k]||{};
+    $('pt_'+k).innerHTML=`<div style="margin-top:12px;font-family:Jua;font-size:19px">그래프에서 짚어 볼 곳</div><div class="pts">${PT[k].map((p,i)=>`<button type="button" class="chip${sel===i?' on':''}" data-pt="${k}|${i}">${i+1} ${esc(p.name)}${notes[i]?' ✓':''}</button>`).join('')}</div>`+
+      (sel!=null?`<div class="ptq"><b>${sel+1} · ${esc(PT[k][sel].name)}</b><div>${esc(PT[k][sel].q)}</div><textarea data-note="${k}|${sel}" placeholder="그래프를 보고 내가 읽은 것">${esc(notes[sel]||'')}</textarea><button type="button" class="btn mini" data-val="${k}">값 확인하기</button><div class="val" id="val_${k}">${esc(PT[k][sel].val)}</div><button type="button" class="btn mini" data-askfrom="${esc(PT[k][sel].name)}" style="background:#fff">❓ 이걸 보고 궁금한 점 질문하기</button></div>`:'<div style="font-size:15px;margin-top:6px">번호를 누르면 그래프에 그곳이 표시돼요. 먼저 그래프를 보고 내 말로 쓴 다음, 값을 확인해요.</div>');
+    document.querySelectorAll(`[data-pt^="${k}|"]`).forEach(b=>b.onclick=()=>{const i=+b.dataset.pt.split('|')[1];PTI[k]=PTI[k]===i?null:i;showGraph(k);});
+    const ta=document.querySelector(`[data-note^="${k}|"]`);if(ta)ta.oninput=()=>{notes[sel]=ta.value;};
+    const vb=document.querySelector(`[data-val="${k}"]`);if(vb)vb.onclick=()=>{if(!(notes[sel]||'').trim()){alert('먼저 그래프를 보고 내가 읽은 것을 써 보세요.');return;}$('val_'+k).style.display='block';};
+    const af=document.querySelector('[data-askfrom]');if(af)af.onclick=()=>{QFROM=af.dataset.askfrom;const q=$('qText');if(q){$('qFrom').textContent='보고 있던 곳: '+QFROM;q.focus();q.scrollIntoView({block:'center'});}};
+    const fb=document.querySelector(`[data-fill="${k}"]`);if(fb)fb.onclick=()=>{const o=D.obs;
+      if(a.is>=0){o.cp0=+a.p0.toFixed(1);o.cp1=+a.cP1.toFixed(1);o.ct0=+a.T0.toFixed(2);o.ct1=+a.cT1.toFixed(2);}
+      if(a.ev>0){o.ep0=+a.eP0.toFixed(1);o.ep1=+a.eP1.toFixed(1);o.et0=+a.eT0.toFixed(2);o.et1=+a.eT1.toFixed(2);}
+      ['cp0','cp1','ct0','ct1','ep0','ep1','et0','et1'].forEach(x=>{const el=document.querySelector(`input[data-k="${x}"]`);if(el&&o[x]!=null)el.value=o[x];});};}
+  else $('sum_'+k).textContent='저장해 둔 그래프예요. 짚어 볼 곳과 숫자를 다시 보려면 파일을 다시 올려요.';
+  cv._hl=hl;cv._cross=null;drawChart(cv,view,hl);
+  cv.onmousemove=e=>readout(cv,k,e);cv.ontouchstart=cv.ontouchmove=e=>{readout(cv,k,e);};}
+const D={};let QFROM='',QTAG='',QDRAFT='';const QTAGS=['기압','온도','구름','실험 장치','하늘의 구름','기타'];
+function render(){
+  $('who').textContent=S.name?`${S.cls} ${S.num}번 ${S.name} · ${S.grp}모둠`:'';
+  // 1 예측
+  const P=S.pred, pd=!!(P&&P.at);
+  D.pred=D.pred||(P?{...P}:{});
+  const d=pd?P:D.pred;
+  $('p1').innerHTML=`
+   <div class="card"><h3>① 펌프로 병에 공기를 넣으면(압축) 병 속 온도는?</h3>${chips('c',TEMP,d.c,pd)}
+     <textarea id="cr" placeholder="그렇게 생각한 까닭" ${pd?'disabled':''}>${esc(d.cr)}</textarea></div>
+   <div class="card"><h3>② 뚜껑을 열어 공기가 빠져나가면(팽창) 병 속 온도는?</h3>${chips('e',TEMP,d.e,pd)}
+     <textarea id="er" placeholder="그렇게 생각한 까닭" ${pd?'disabled':''}>${esc(d.er)}</textarea></div>
+   <div class="card"><h3>③ 뚜껑을 여는 순간, 병 속에서 무엇을 보게 될까?</h3>
+     <textarea id="see" placeholder="자유롭게" ${pd?'disabled':''}>${esc(d.see)}</textarea></div>
+   ${pd?'<div class="card">✅ 처음 생각을 저장했어요. 이 생각은 바꾸지 않고, 실험 뒤에 다시 비교해요.</div>':'<button class="btn" id="btnPred">처음 생각 저장</button><div class="done">저장하면 바꿀 수 없어요. 지금 내 생각 그대로 써 주세요.</div>'}`;
+  // 2 관찰
+  if(STAGE<2&&!(S.obs&&S.obs.at)){$('p2').innerHTML=lockBox(2);}else{
+   const O=S.obs||{}; D.obs=D.obs||{...O};const o=D.obs;
+   const num=(k,ph)=>`<label>${ph}<input type="number" step="0.01" data-k="${k}" value="${o[k]??''}"></label>`;
+   $('p2').innerHTML=`
+   <div class="card"><h3>내 측정 파일로 그래프 보기</h3><div>측정을 시작하고 → 펌프를 계속 누르고 → 잠깐 기다렸다가 → 뚜껑을 열기까지, 한 번에 잰 파일을 넣어요.</div>${gbox('a')}</div>
+   <div class="card"><h3>압축: 펌프를 누를 때</h3>
+     기압 ${chips('cp',DIR,o.cp)} 온도 ${chips('ct',DIR,o.ct)}
+     <div class="nums">${num('cp0','기압 처음(hPa)')}${num('cp1','기압 나중(hPa)')}${num('ct0','온도 처음(°C)')}${num('ct1','온도 나중(°C)')}</div>
+     <div class="done">숫자는 그래프에서 읽을 수 있을 때만 써요. 화살표가 더 중요해요.</div></div>
+   <div class="card"><h3>팽창: 뚜껑을 여는 순간</h3>
+     기압 ${chips('ep',DIR,o.ep)} 온도 ${chips('et',DIR,o.et)}
+     <div class="nums">${num('ep0','기압 처음(hPa)')}${num('ep1','기압 나중(hPa)')}${num('et0','온도 처음(°C)')}${num('et1','온도 나중(°C)')}</div></div>
+   <div class="card"><h3>눈으로 본 것</h3>
+     뚜껑을 열었을 때 ${chips('so',SEE,o.so)}
+     다시 뚜껑을 닫고 펌프를 눌렀을 때 ${chips('sr',SEE,o.sr)}
+     <textarea id="memo" placeholder="더 본 것, 이상했던 것">${esc(o.memo)}</textarea></div>
+   <button class="btn" id="btnObs">관찰 기록 저장</button>${O.at?'<div class="done">✅ 저장했어요. 고친 뒤 다시 저장해도 돼요.</div>':''}
+   <div class="card" id="qCard" style="background:#fff8e7"><h3>❓ 관찰하고 질문 만들기</h3>
+     <div>그래프와 병 속을 보고 궁금해진 것을 질문으로 만들어요. 몇 개든 좋아요.</div>
+     <div class="done">예: "왜 ~할까?" · "만약 ~하면 어떻게 될까?" · "~와 ~는 무슨 관계일까?"</div>
+     <div id="qFrom" style="font-size:15px;margin-top:6px"></div>
+     <textarea id="qText" placeholder="내 질문">${esc(QDRAFT)}</textarea>
+     <div style="font-size:15px;margin-top:6px">무엇에 대한 질문인가요?</div>${chips('qtag',QTAGS,QTAG)}
+     <button class="btn" id="btnQ">질문 올리기</button>
+     <div id="qList">${(S.qs||[]).map((q,i)=>`<div class="done" style="background:#fff;border:2px solid #2b2b2b;border-radius:14px;padding:6px 10px;margin-top:6px">${esc(q.text)} <span style="font-size:13px">· ${esc(q.tag||'')}${q.from?' · '+esc(q.from):''}</span> <button type="button" data-qdel="${i}" style="border:0;background:none;cursor:pointer">✕</button></div>`).join('')}</div></div>`;}
+  // 3 규칙
+  if(STAGE<3&&!(S.rule&&S.rule.at)){$('p3').innerHTML=lockBox(3);}else{
+   const R=S.rule||{};
+   $('p3').innerHTML=`
+   <div class="card"><h3>선생님 화면에서 모든 모둠의 관찰을 보고 써요</h3>
+     <div>모든 모둠에서 똑같이 나타난 것은 무엇인가요? 규칙을 한 문장으로 써 보세요.</div>
+     <textarea id="rule" placeholder="공기가 ~하면 온도는 ~하고, 그때 병 속에는 ~">${esc(R.text)}</textarea>
+     <div style="margin-top:10px">구름이 생겼다가 다시 사라진 까닭은 무엇일까요?</div>
+     <textarea id="why" placeholder="내 생각">${esc(R.why)}</textarea></div>
+   <button class="btn" id="btnRule">규칙 저장</button>${R.at?'<div class="done">✅ 저장했어요.</div>':''}`;}
+  // 4 다시 생각
+  if(STAGE<4&&!(S.post&&S.post.at)){$('p4').innerHTML=lockBox(4);}else{
+   const Q=S.post||{}; D.post=D.post||{...Q,blank:{...(Q.blank||{})}};const q=D.post;const p=S.pred||{};
+   $('p4').innerHTML=`
+   <div class="cmp"><div class="card"><h3>처음 생각</h3>압축 → 온도 <b>${esc(p.c||'-')}</b><br>팽창 → 온도 <b>${esc(p.e||'-')}</b><div class="done">${esc(p.see||'')}</div></div>
+   <div class="card"><h3>지금 생각</h3>압축 → 온도 ${chips('qc',TEMP,q.qc)} 팽창 → 온도 ${chips('qe',TEMP,q.qe)}</div></div>
+   <div class="card"><h3>생각이 바뀌었나요? 무엇 때문에?</h3><textarea id="chg" placeholder="바뀌지 않았다면, 내 생각이 맞았다는 근거를 써요">${esc(q.chg)}</textarea></div>
+   <div class="card"><h3>학습지 결과 정리</h3>${BLANKS.map(b=>`<div>${b[1]} <span class="blank"><select data-b="${b[0]}"><option value="">고르기</option>${b[2].map(x=>`<option${(q.blank||{})[b[0]]===x?' selected':''}>${x}</option>`).join('')}</select></span> ${b[3]}</div>`).join('')}</div>
+   <button class="btn" id="btnPost">지금 생각 저장</button>${Q.at?'<div class="done">✅ 저장했어요.</div>':''}`;}
+  bind();
+}
+function bind(){
+  document.querySelectorAll('.chip:not([disabled])').forEach(b=>b.onclick=()=>{const n=b.dataset.n,v=b.dataset.v;
+    if(n==='qtag'){QTAG=v;b.parentNode.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b));return;}
+    const tgt=['c','e'].includes(n)?D.pred:['qc','qe'].includes(n)?D.post:D.obs;tgt[n]=v;
+    b.parentNode.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b));});
+  document.querySelectorAll('#p2 input[data-k]').forEach(i=>i.oninput=()=>{D.obs[i.dataset.k]=i.value===''?null:+i.value;});
+  document.querySelectorAll('#p4 select[data-b]').forEach(s=>s.onchange=()=>{D.post.blank[s.dataset.b]=s.value;});
+  document.querySelectorAll('input[data-csv]').forEach(inp=>inp.onchange=()=>{const k=inp.dataset.csv,f=inp.files[0];if(!f)return;
+    const r=new FileReader();r.onload=()=>{const runs=parseCSV(String(r.result));if(!runs){$('sum_'+k).textContent='이 파일에서 시간·기압·온도 값을 찾지 못했어요. 다운로드한 CSV 파일이 맞는지 확인해요.';return;}
+      RUNS[k]=runs;RUNI[k]=runs.length-1;RAW[k]=runs[RUNI[k]];D.obs['g'+k]=down(RAW[k]);showGraph(k);};r.readAsText(f);});
+  const vw=$('view_a');if(vw)vw.onchange=()=>showGraph('a');
+  if(RAW.a||(D.obs&&D.obs.ga))showGraph('a');
+  const qt=$('qText');if(qt){qt.oninput=()=>{QDRAFT=qt.value;};if(QFROM)$('qFrom').textContent='보고 있던 곳: '+QFROM;}
+  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=()=>{if(!confirm('이 질문을 지울까요?'))return;S.qs.splice(+b.dataset.qdel,1);save();sync();render();});
+  const B=(id,fn)=>{const e=$(id);if(e)e.onclick=fn;};
+  B('btnQ',()=>{const t=$('qText').value.trim();if(!t){alert('질문을 써 주세요.');return;}
+    S.qs=S.qs||[];S.qs.push({text:t,tag:QTAG||'기타',from:QFROM||'',at:Date.now()});QDRAFT='';QFROM='';QTAG='';save();sync();render();
+    const c=$('qCard');if(c)c.scrollIntoView({block:'center'});});
+  B('btnPred',()=>{const p=D.pred;p.cr=$('cr').value.trim();p.er=$('er').value.trim();p.see=$('see').value.trim();
+    if(!p.c||!p.e){alert('①, ②의 선택지를 골라 주세요.');return;}
+    S.pred={...p,at:Date.now()};save();sync();render();});
+  B('btnObs',()=>{const o=D.obs;o.memo=$('memo').value.trim();if(PT.a)o.ptNames=PT.a.map(p=>p.name);
+    if(!o.cp||!o.ct||!o.ep||!o.et||!o.so){alert('화살표와 눈으로 본 것을 골라 주세요.');return;}
+    S.obs={...o,at:Date.now()};save();sync();render();});
+  B('btnRule',()=>{const t=$('rule').value.trim();if(!t){alert('규칙을 써 주세요.');return;}
+    S.rule={text:t,why:$('why').value.trim(),at:Date.now()};save();sync();render();});
+  B('btnPost',()=>{const q=D.post;q.chg=$('chg').value.trim();if(!q.qc||!q.qe){alert('지금 생각을 골라 주세요.');return;}
+    S.post={qc:q.qc,qe:q.qe,chg:q.chg,blank:{...q.blank},at:Date.now()};save();sync();render();});
+}
+
+/* ===== Firestore ===== */
+function toV(v){if(v===null||v===undefined)return{nullValue:null};if(typeof v==='boolean')return{booleanValue:v};
+  if(typeof v==='number')return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};if(typeof v==='string')return{stringValue:v};
+  if(Array.isArray(v))return{arrayValue:{values:v.map(toV)}};return{mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,x])=>[k,toV(x)]))}};}
+function fromV(v){if(!v)return null;if('stringValue'in v)return v.stringValue;if('integerValue'in v)return +v.integerValue;if('doubleValue'in v)return v.doubleValue;
+  if('booleanValue'in v)return v.booleanValue;if('arrayValue'in v)return(v.arrayValue.values||[]).map(fromV);
+  if('mapValue'in v)return Object.fromEntries(Object.entries(v.mapValue.fields||{}).map(([k,x])=>[k,fromV(x)]));return null;}
+let AU=null;
+async function authed(){
+  if(AU&&AU.exp>Date.now()+60000)return AU;
+  if(!AU){try{AU=JSON.parse(localStorage.getItem('cloud1_auth')||'null');}catch(e){AU=null;}}
+  if(AU&&AU.exp>Date.now()+60000)return AU;
+  if(AU&&AU.refresh){const r=await fetch('https://securetoken.googleapis.com/v1/token?key='+FB.apiKey,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(AU.refresh)});
+    if(r.ok){const j=await r.json();AU={id:j.id_token,refresh:j.refresh_token,uid:j.user_id,exp:Date.now()+(+j.expires_in)*1000};}else AU=null;}
+  if(!AU||!AU.id){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+FB.apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({returnSecureToken:true})});
+    if(!r.ok)throw new Error('auth '+r.status);const j=await r.json();AU={id:j.idToken,refresh:j.refreshToken,uid:j.localId,exp:Date.now()+(+j.expiresIn)*1000};}
+  try{localStorage.setItem('cloud1_auth',JSON.stringify(AU));}catch(e){}
+  return AU;}
+const ROOT=()=>`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents/`;
+let syncT=null,busy=false,again=false;
+function sync(){if(!FB_ON||!S.name)return;clearTimeout(syncT);syncT=setTimeout(flush,80);}
+async function flush(){if(busy){again=true;return;}busy=true;
+  try{await authed();
+    const data={cls:S.cls,num:S.num,name:S.name,grp:S.grp,pred:S.pred||null,obs:S.obs||null,qs:S.qs||[],rule:S.rule||null,post:S.post||null,updated:Date.now()};
+    const mask=Object.keys(data).map(k=>'updateMask.fieldPaths='+k).join('&');
+    const r=await fetch(ROOT()+FB.col+'/'+AU.uid+'?'+mask,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+AU.id},body:JSON.stringify({fields:Object.fromEntries(Object.entries(data).map(([k,v])=>[k,toV(v)]))})});
+    if(!r.ok)throw new Error('save '+r.status);setSync(1);
+  }catch(e){setSync(0);clearTimeout(syncT);syncT=setTimeout(flush,8000);}
+  busy=false;if(again){again=false;flush();}}
+function setSync(ok){$('sync').textContent=!FB_ON?'⚪ 저장만(연결 꺼짐)':ok?'🟢 선생님과 연결됨':'🟠 인터넷 연결을 기다리는 중 · 기록은 이 노트북에 저장돼요';}
+async function poll(){if(!FB_ON||!S.name)return;
+  try{await authed();
+    const r=await fetch(ROOT()+FB.ctrl,{headers:{Authorization:'Bearer '+AU.id}});
+    if(r.ok){const j=await r.json();const st=j.fields&&j.fields.stage?fromV(j.fields.stage):1;if(st!==STAGE){STAGE=st;S.stage=st;save();render();}}
+    const f=await fetch(ROOT()+FB.col+'/'+AU.uid+'?mask.fieldPaths=fb',{headers:{Authorization:'Bearer '+AU.id}});
+    if(f.ok){const j=await f.json();const fb=j.fields&&j.fields.fb?fromV(j.fields.fb):null;if(fb&&fb.at>(S.fbSeen||0)){$('fbText').textContent=fb.t;$('fbBox').classList.add('on');$('fbBox').dataset.at=fb.at;}}
+    if(S.name)setSync(1);
+  }catch(e){setSync(0);}}
+$('fbOk').onclick=()=>{S.fbSeen=+$('fbBox').dataset.at;save();$('fbBox').classList.remove('on');};
+
+/* ===== 시작 ===== */
+function enter(){$('startSec').hidden=true;$('main').hidden=false;render();sync();poll();}
+$('btnStart').onclick=()=>{const c=$('inCls').value.trim(),n=+$('inNum').value,m=$('inName').value.trim(),g=$('inGrp').value;
+  if(!c||!n||!m||!g){$('startMsg').textContent='반, 번호, 이름, 모둠을 모두 써 주세요.';return;}
+  S.cls=c;S.num=n;S.name=m;S.grp=+g;save();enter();};
+setSync(1);
+if(S.name)enter();
+setInterval(()=>{if(!document.hidden)poll();},5000);
+</script>
+</body>
+</html>
